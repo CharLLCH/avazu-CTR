@@ -1,0 +1,26 @@
+train-Training set of 10 days of click-through data,ordered chronologically.
+test-Test set of 1 day of ads to for testing your model predictions.
+Data fields:
+id:ad identifier
+click:0/1 for non-click/click
+hour:format is YYMMDDHH,so 14091123 means 23:00 on Sept. 11 2014
+columns 1-4,20-24:anonymized variables
+columns 5-19:named variables
+Evaluation:
+Submissions are eveluated using the Logarithmic Loss(smaller is better)
+Submission Format:
+id of production , predicted of the probability
+id , click
+
+Logarithmic Loss (Logloss)
+LogLoss =$-\frac{1}{n}\Sigma_{i=1}^{n} [y_{i}\log y_{i}{'} + (1-y_{i})\log (1-y_{i}^{'})]$
+
+python:
+import scipy as sp
+def LogLossFun(act,pred):
+	epsilon = 1e-15
+	pred = sp.maximum(epsilon,pred)
+	pred = sp.minimum(1-epsilon,pred)
+	LogLoss = sum(act * sp.log(pred) + sp.subtract(1,act) * sp.log(sp.subtract(1,pred)))
+	LogLoss = LogLoss * -1.0/len(act)
+	return LogLoss
