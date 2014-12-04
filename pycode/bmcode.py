@@ -11,8 +11,8 @@ from read_conf import config
 t_path = config("../conf/dp.conf")
 train_data_path = t_path["train_data_path"]
 test_data_path = t_path["test_data_path"]
-train_header_path = t_path["train_header_path"]
-test_header_path = t_path["test_header_path"]
+#train_header_path = t_path["train_header_path"]
+#test_header_path = t_path["test_header_path"]
 
 D = 2 ** 20  # number of weights use for each model, we have 32 of them
 #用hash值做数组index来操作的
@@ -77,7 +77,7 @@ for ID, x, y in data(train_data_path, traindata = True):
                 datetime.now(), tt, (loss * 1./tt)))
     tt += 1
 
-with open('./sub.csv', 'w') as outfile:
+with open('../result/sub.csv', 'wb') as outfile:
     outfile.write('id,click\n')
     for ID, x in data(test_data_path):
         for k in K:
