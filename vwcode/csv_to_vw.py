@@ -12,14 +12,13 @@ def csv_to_vw(inpath,outpath,is_train=True):
 
     with in_f as infile:
         line_count = 0
-        for line in infile:
+        for lines in infile.readlines():
             if line_count == 0:
                 line_count == 1
                 continue
             cat_feat = ''
             counter += 1
-            line = line.split(",")
-
+            line = lines.split(",")
             if is_train:
                 date_feat = line[2]
                 new_date_feat = datetime(int("20"+date_feat[0:2]),int(date_feat[2:4]),int(date_feat[4:6]))
@@ -46,14 +45,13 @@ def csv_to_vw(inpath,outpath,is_train=True):
                     click = 1
                 else:
                     click = -1
-
                 out_f.write( "%s '%s %s\n" % (click,line[0],cat_feat))
             else:
                 out_f.write( "1 '%s %s\n" % (line[0],cat_feat))
 
             if counter % 1000000 == 0:
-                print ("%s\t%s"%(counter,str(datetime.now()) - start)
+                print ("%s\t%s"%(counter,str(datetime.now()) - start))
 
 if __name__ == "__main__":
-    csv_to_vw('../data/train.csv','../result/newtrain.vw',is_train=True)
-    csv_to_vw('../data/test.csv','../result/newtest.vw',is_train=False)
+    csv_to_vw('../data/train.csv','../result/newtrain.vw',True)
+    csv_to_vw('../data/test.csv','../result/newtest.vw',False)
