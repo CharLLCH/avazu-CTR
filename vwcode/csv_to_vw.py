@@ -5,20 +5,20 @@ from datetime import datetime
 def csv_to_vw(inpath,outpath,is_train=True):
     start = datetime.now()
     
-    in_f = open(inpath,'r')
-    out_f = open(outpath,'wb')
+    infile = open(inpath,'rb')
+    #out_f = open(outpath,'wb')
 
     counter = 0
 
-    with in_f as infile:
+    with open(outpath,'wb') as out_f:
         line_count = 0
-        for lines in infile.readlines():
+        for lines in infile:
             if line_count == 0:
                 line_count == 1
                 continue
             cat_feat = ''
             counter += 1
-            line = lines.split(",")
+            line = lines.split(',')
             if is_train:
                 date_feat = line[2]
                 new_date_feat = datetime(int("20"+date_feat[0:2]),int(date_feat[2:4]),int(date_feat[4:6]))
@@ -45,6 +45,7 @@ def csv_to_vw(inpath,outpath,is_train=True):
                     click = 1
                 else:
                     click = -1
+                print "one here.."
                 out_f.write( "%s '%s %s\n" % (click,line[0],cat_feat))
             else:
                 out_f.write( "1 '%s %s\n" % (line[0],cat_feat))
