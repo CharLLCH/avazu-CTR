@@ -67,3 +67,12 @@ def csv_to_vw(loc_csv, loc_output, train=True):
 
 #csv_to_vw("/Users/RahulAgarwal/kaggle_cpr/train", "/Users/RahulAgarwal/kaggle_cpr/click.train_original_data.vw",train=True)
 #csv_to_vw("/Users/RahulAgarwal/kaggle_cpr/test", "/Users/RahulAgarwal/kaggle_cpr/click.test_original_data.vw",train=False)
+
+#vw -d newtrain.csv -f train.model --loss_function logistic
+#vw -d newtest.csv -t -i train.model -p pred_vw.txt
+
+'''
+-better one:shuffle the data before making the model as the VW alg is an online learner and might have given more preference to the latest data; provide high weights for clicks as data is skewed.How much?!; tune VW alg using vw-hypersearch. What should be tuned?; Use cat features like |C1 "C1"&"1"
+-Create a XGBoost Model
+-Create a Sofia-ML model and see how it works on this data.
+'''
