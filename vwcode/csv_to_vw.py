@@ -50,7 +50,7 @@ def csv_to_vw(inpath,outpath,is_train=True):
                 out_file.write( "1 '%s %s\n" % (line[0],cat_feat))
 
             if counter % 1000000 == 0:
-                print ("%s\t%s"%(counter,str(datetime.now()) - start))
+                print ("%s\t%s"%(counter,str(datetime.now() - start)))
 
 if __name__ == "__main__":
     csv_to_vw('../data/train.csv','../result/newtrain.vw',True)
