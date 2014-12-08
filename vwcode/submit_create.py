@@ -1,6 +1,7 @@
 #coding=utf-8
 
 import math
+import zipfile
 
 def zymoid(x):
     return 1 / ( 1 + math.exp(-x) )
