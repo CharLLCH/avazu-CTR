@@ -41,5 +41,5 @@ def csv_to_vw(inpath,outpath,is_train=True):
             counter += 1
 
 if __name__ == "__main__":
-    csv_to_vw('../data/train.csv','../result/tr_t_out_vw_hash.vw',True)
-    csv_to_vw('../data/test.csv','../result/te_t_out_vw_hash.vw',False)
+    csv_to_vw('../data/train.csv','../result/tr_t_in_vw_hash.vw',True)
+    csv_to_vw('../data/test.csv','../result/te_t_in_vw_hash.vw',False)
