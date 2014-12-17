@@ -1,22 +1,4 @@
-'''
-
-Based on fast_solutions from Sam Hocevar, additions by Yannick Martel
-
-           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-                   Version 2, December 2004
-
-Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>, Yannick Martel <ymartel@gmail.com>
-
-Everyone is permitted to copy and distribute verbatim or modified
-copies of this license document, and changing it is allowed as long
-as the name is changed.
-
-           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-
- 0. You just DO WHAT THE FUCK YOU WANT TO.
-'''
-
+#coding=utf-8
 
 from datetime import datetime
 from csv import DictReader
@@ -27,27 +9,11 @@ from sys import argv, stdout, stderr
 import random
 import argparse
 
-
-##############################################################################
-# class, function, generator definitions #####################################
-##############################################################################
-
 class ftrl_proximal(object):
-    ''' Our main algorithm: Follow the regularized leader - proximal
-
-        In short,
-        this is an adaptive-learning-rate sparse logistic-regression with
-        efficient L1-L2-regularization
-
-        Reference:
-        http://www.eecs.tufts.edu/~dsculley/papers/ad-click-prediction.pdf
-    '''
-
     def __init__(self, alpha, beta, L1, L2, D, 
                  interaction=False, dropout = 1.0, sparse = False,
                  dayfeature = True,
                  device_counters = False):
-        # parameters
         self.alpha = alpha
         self.beta = beta
         self.L1 = L1
@@ -55,15 +21,10 @@ class ftrl_proximal(object):
         self.dayfeature = dayfeature
         self.device_counters = device_counters
 
-        # feature related parameters
         self.D = D
         self.interaction = interaction
         self.dropout = dropout        
 
-        # model
-        # n: squared sum of past gradients
-        # z: weights
-        # w: lazy weights
         self.n = [0.] * D
         self.z = [0.] * D
         
@@ -73,12 +34,6 @@ class ftrl_proximal(object):
             self.w = [0.] * D  # use this for execution speed up
 
     def _indices(self, x):
-        ''' A helper generator that yields the indices in x
-
-            The purpose of this generator is to make the following
-            code a bit cleaner when doing feature interaction.
-        '''
-
         for i in x:
             yield i
 
@@ -91,21 +46,10 @@ class ftrl_proximal(object):
                     yield abs(hash(str(x[i]) + '_' + str(x[j]))) % D
 
     def predict(self, x, dropped = None):
-        ''' Get probability estimation on x
-
-            INPUT:
-                x: features
-
-            OUTPUT:
-                probability of p(y = 1 | x; w)
-        '''
-        # params
         dropout = self.dropout
 
-        # model
         w = self.w
 
-        # wTx is the inner product of w and x
         wTx = 0.
         for j, i in enumerate(self._indices(x)):
             
@@ -116,29 +60,14 @@ class ftrl_proximal(object):
         
         if dropped != None: wTx /= dropout 
 
-        # bounded sigmoid function, this is the probability estimation
         return 1. / (1. + exp(-max(min(wTx, 35.), -35.)))
 
     def update(self, x, y):
-        ''' Update model using x, p, y
-
-            INPUT:
-                x: feature, a list of indices
-                p: click probability prediction of our model
-                y: answer
-
-            MODIFIES:
-                self.n: increase by squared gradient
-                self.z: weights
-        '''
-
-        # parameters
         alpha = self.alpha
         beta = self.beta
         L1 = self.L1
         L2 = self.L2
 
-        # model
         n = self.n
         z = self.z
         w = self.w  # no need to change this, it won't gain anything
@@ -153,13 +82,10 @@ class ftrl_proximal(object):
         
         p = self.predict(x, dropped)
 
-        # gradient under logloss
         g = p - y
 
-        # update z and n
         for j, i in enumerate(ind):
 
-            # implement dropout as overfitting prevention
             if dropped != None and dropped[j]: continue
 
             sigma = (sqrt(n[i] + g * g) - sqrt(n[i])) / alpha
@@ -168,73 +94,39 @@ class ftrl_proximal(object):
             
             sign = -1. if z[i] < 0 else 1.  # get sign of z[i]
 
-            # build w on the fly using z and n, hence the name - lazy weights -
             if sign * z[i] <= L1:
-                # w[i] vanishes due to L1 regularization
                 w[i] = 0.
             else:
-                # apply prediction time L1, L2 regularization to z and get w
                 w[i] = (sign * L1 - z[i]) / ((beta + sqrt(n[i])) / alpha + L2)
 
 
 
 def logloss(p, y):
-    ''' FUNCTION: Bounded logloss
-
-        INPUT:
-            p: our prediction
-            y: real answer
-
-        OUTPUT:
-            logarithmic loss of p given y
-    '''
-
     p = max(min(p, 1. - 10e-15), 10e-15)
     return -log(p) if y == 1. else -log(1. - p)
 
 
 def data(f_train, D, dayfilter = None, dayfeature = True, counters = False):
-    ''' GENERATOR: Apply hash-trick to the original csv row
-                   and for simplicity, we one-hot-encode everything
-
-        INPUT:
-            path: path to training or testing file
-            D: the max index that we can hash to
-
-        YIELDS:
-            ID: id of the instance, mainly useless
-            x: a list of hashed and one-hot-encoded 'indices'
-               we only need the index since all values are either 0 or 1
-            y: y = 1 if we have a click, else we have y = 0
-    '''
-
     device_ip_counter = {}
     device_id_counter = {}
 
     for t, row in enumerate(DictReader(f_train)):
-        # process id
         ID = row['id']
         del row['id']
 
-        # process clicks
         y = 0.
         if 'click' in row:
             if row['click'] == '1':
                 y = 1.
             del row['click']
  
-        # turn hour really into hour, it was originally YYMMDDHH
-
         date = row['hour'][0:6]
         row['hour'] = row['hour'][6:]
-        
-        #       stderr.write("_%s_" % date)
         
         if dayfilter != None and not date in dayfilter:
             continue
 
         if dayfeature: 
-            # extract date
             row['wd'] = str(int(date) % 7)
             row['wd_hour'] = "%s_%s" % (row['wd'], row['hour'])            
 
@@ -250,7 +142,6 @@ def data(f_train, D, dayfilter = None, dayfeature = True, counters = False):
             row["ipc"] = str(min(device_ip_counter[d_ip], 8))
             row["idc"] = str(min(device_id_counter[d_id], 8))
 
-        # build x
         x = [0]  # 0 is the index of the bias term
         for key in row:
             value = row[key]
@@ -261,29 +152,10 @@ def data(f_train, D, dayfilter = None, dayfeature = True, counters = False):
 
         yield t, ID, x, y
 
-
-##############################################################################
-# start training #############################################################
-##############################################################################
-
-
 def myargs():
     
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description = 
-""" 
-Perform training and prediction based on FTRL Optimal algorithm, with dropout added.
-\nUsage is via:
-\n
-\n\t* Training:
-\n
-\n\t\tpypy fastd.py train -t <train set> -o <output model> --<various parameters>
-\n
-\n\t* Predicting:
-\n
-\n\t\tpypy fastd.py predict --test <test set> -i <input model> -p <output predictions>
-\n
-""")
     parser.add_argument('action', type=str,
                         help='action to perform: train   / predict')
     parser.add_argument('-t', "--train", default = "/dev/stdin")
@@ -370,24 +242,11 @@ def train_learner(train, dayfilter, args):
                                dayfilter = dayfilter,
                                dayfeature = dayfeaturep,
                                counters = args.device_counters):
-           # data is a generator
-           #  t: just a instance counter
-           # ID: id provided in original data
-           #  x: features
-           #  y: label (click)
-            
-           # step 1, get prediction from learner
-            
            if t % holdout == 0:
-                # step 2-1, calculate holdout validation loss
-                #           we do not train with the holdout data so that our
-                #           validation loss is an accurate estimation of
-                #           the out-of-sample error
                 p = learner.predict(x)
                 loss += logloss(p, y)
                 count += 1
            else:
-               # step 2-2, update learner with label (click) information
                learner.update(x, y)
             
            c += 1 
