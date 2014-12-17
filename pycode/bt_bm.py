@@ -156,6 +156,19 @@ def myargs():
     
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description = 
+""" 
+Perform training and prediction based on FTRL Optimal algorithm, with dropout added.
+\nUsage is via:
+\n
+\n\t* Training:
+\n
+\n\t\tpypy fastd.py train -t <train set> -o <output model> --<various parameters>
+\n
+\n\t* Predicting:
+\n
+\n\t\tpypy fastd.py predict --test <test set> -i <input model> -p <output predictions>
+\n
+""")
     parser.add_argument('action', type=str,
                         help='action to perform: train   / predict')
     parser.add_argument('-t', "--train", default = "/dev/stdin")
