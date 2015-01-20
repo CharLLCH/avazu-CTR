@@ -20,7 +20,8 @@ def csv_to_vw(inpath,outpath,is_train=True):
                 date_feat = line[2]
                 new_date_feat = datetime(int("20"+date_feat[0:2]),int(date_feat[2:4]),int(date_feat[4:6]))
                 day = new_date_feat.strftime("%A")
-                hour = date_feat[6:8]
+                #hour to month
+                hour = date_feat[2:4]
                 cat_feat += " |hr %s" % hour
                 cat_feat += " |dat %s" % day
                 for feat in range(3,24):
@@ -30,7 +31,7 @@ def csv_to_vw(inpath,outpath,is_train=True):
                 date_feat = line[1]
                 new_date_feat = datetime(int("20"+date_feat[0:2]),int(date_feat[2:4]),int(date_feat[4:6]))
                 day = new_date_feat.strftime("%A")
-                hour = date_feat[6:8]
+                hour = date_feat[2:4]
                 cat_feat += " |hr %s" % hour
                 cat_feat += " |dat %s" % day
                 for feat in range(2,23):

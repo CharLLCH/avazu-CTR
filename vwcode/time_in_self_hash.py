@@ -10,7 +10,7 @@ def csv_to_vw(inpath,outpath,is_train=True):
     #out_f = open(outpath,'wb')
 
     counter = 0
-    D = 10 ** 6
+    D = 2 ** 24
 
     with open(outpath,'wb') as out_file:
         line_count = 0
@@ -26,23 +26,25 @@ def csv_to_vw(inpath,outpath,is_train=True):
                 new_date_feat = datetime(int("20"+date_feat[0:2]),int(date_feat[2:4]),int(date_feat[4:6]))
                 day = new_date_feat.strftime("%A")
                 hour = date_feat[6:8]
-                cat_feat += " |hr %s" % hour
-                cat_feat += " |dat %s" % day
+                cat_feat += " |hr %s " % str(int(hashlib.md5(hour).hexdigest(),16)%D+1)
+                cat_feat += " |dat %s " % str(int(hashlib.md5(day).hexdigest(),16)%D+1)
                 for feat in range(3,24):
                     if line[feat] != "":
                         #cat_feat += "|c%s %s" % (str(feat),line[feat])
-                        cat_feat += "|c%s %s" % (str(feat),str(int(hashlib.md5(line[feat].encode('utf-8')).hexdigest(),16)%D+1))
+                        cat_feat += "|c%s %s " % (str(feat),str(int(hashlib.md5(line[feat].encode('utf-8')).hexdigest(),16)%D+1))
             else:
                 date_feat = line[1]
                 new_date_feat = datetime(int("20"+date_feat[0:2]),int(date_feat[2:4]),int(date_feat[4:6]))
                 day = new_date_feat.strftime("%A")
                 hour = date_feat[6:8]
-                cat_feat += " |hr %s" % hour
-                cat_feat += " |dat %s" % day
+                cat_feat += " |hr %s " % str(int(hashlib.md5(hour).hexdigest(),16)%D+1)
+                cat_feat += " |dat %s " % str(int(hashlib.md5(day).hexdigest(),16)%D+1)
+                #cat_feat += " |hr %s" % hour
+                #cat_feat += " |dat %s " % day
                 for feat in range(2,23):
                     if line[feat] != "":
                         #cat_feat += "|c%s %s" % (str(feat+1),line[feat])
-                        cat_feat += "|c%s %s" % (str(feat+1),str(int(hashlib.md5(line[feat].encode('utf-8')).hexdigest(),16)%D+1))
+                        cat_feat += "|c%s %s " % (str(feat+1),str(int(hashlib.md5(line[feat].encode('utf-8')).hexdigest(),16)%D+1))
 
             if is_train:
                 if line[1] == "1":
