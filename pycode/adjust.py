@@ -31,6 +31,6 @@ def adjust_result(in_path,out_path):
 	outfile.close()
 
 if __name__ == "__main__":
-	in_path = '../result/L5N4D7sub.gz'
+	in_path = '../result/more/L5N4D7sub.gz'
 	out_path = '../result/L5N4D7subadj.gz'
 	adjust_result(in_path,out_path)

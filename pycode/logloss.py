@@ -57,3 +57,4 @@ if __name__ == "__main__":
     y_path = '../result/test_click.gz'
     loss = get_logloss(p_path,y_path)
     print 'totalloss',loss
+    #get_test_click('../result/test_29_30.csv')

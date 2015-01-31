@@ -68,6 +68,7 @@ def split_train(path):
     
     new_te_file.close()
     new_tr_file.close()
+    click_file.close()
 
 
 if __name__ == "__main__":

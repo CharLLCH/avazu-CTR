@@ -28,9 +28,9 @@ def get_raw_data(inpath,outpath):
     nt_file.close()
 
 if __name__ == "__main__":
-    tr_path = '../result/train_21_28.csv'
-    te_path = '../result/test_29_30.csv'
+    tr_path = '../data/train.csv'
+    te_path = '../data/test.csv'
     otr_path = '../../libfm-1.42.src/scripts/traint.dat'
     ote_path = '../../libfm-1.42.src/scripts/test.dat'
-    #get_raw_data(te_path,ote_path)
+    get_raw_data(te_path,ote_path)
     get_raw_data(tr_path,otr_path)
