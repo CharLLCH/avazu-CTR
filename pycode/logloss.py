@@ -53,7 +53,7 @@ def get_logloss(pred_path,click_path):
     return loss / idx
 
 if __name__ == "__main__":
-    p_path = '../result/sub.gz'
+    p_path = '../result/no_pred.gz'
     y_path = '../result/test_click.gz'
     loss = get_logloss(p_path,y_path)
     print 'totalloss',loss

@@ -35,9 +35,9 @@ def get_fields_days(path):
 def split_train(path):
     infile = open('../result/fields.pkl','rb')
     TR_FIELDS = pickle.load(infile)
-    print TR_FIELDS
+    #print TR_FIELDS
     TE_FIELDS = [item for item in TR_FIELDS if item !='click']
-    print TE_FIELDS
+    #print TE_FIELDS
     
     new_tr_file = open('../result/train_21_28.csv','wb')
     new_te_file = open('../result/test_29_30.csv','wb')
